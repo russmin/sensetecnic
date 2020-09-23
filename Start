@@ -1,0 +1,123 @@
+#!/bin/bash
+
+# This Start script is used by the app-manager program to start and stop
+# applications. app-manager invokes this script with the 'start' option on boot
+# and when the app-manager start command is run. app-manager invokes this
+# script with the 'stop' option on shutdown and when the app-manager stop
+# command is run.
+#
+# app-manager requires this script to accept the following command line
+# arguments:
+#
+#   start - start the application process(es)
+#   stop  - stop the application process(es)
+#   restart - restart the application process(es)
+#   reload - reload the application configuration (new config downloaded)
+#
+#
+# This script is a fully cusomizable template that can be used to initialize
+# the environment for executing the application and starting all processes.
+# This script is the supported framework to start and stop an application.
+
+NAME="Sensetecnic"
+DESC="Send packets to Sensetecnic remote MQTT"
+DAEMON="/media/card/sensetecnic/remote_mqtt.py"
+PID="/var/run/remote_mqtt.pid"
+
+function SetEnv {
+# Environment Variables
+#    CONFIG_DIR
+#    APP_DIR
+#    APP_ID
+
+    echo "SetEnv"
+
+    echo $CONFIG_DIR
+    logger -t Start "$CONFIG_DIR"
+    echo $APP_DIR
+    logger -t Start "$APP_DIR"
+    echo $APP_ID
+    logger -t Start "$APP_ID"
+
+}
+
+function CreateAccess {
+    echo "CreateAccess:"	
+}
+
+# for future use
+function ChangeUser {
+    echo "ChangeUser:"	
+}
+
+function Execute {
+    echo "Execute:"
+    /usr/sbin/start-stop-daemon --start --background --pidfile "$PID" --make-pidfile --startas "$DAEMON" --chdir $APP_DIR
+}
+
+function Restart {
+    echo "Restart:"	
+    Stop
+    sleep 1
+    Start
+}
+
+function Stop {
+    echo "Stop:"
+    /usr/sbin/start-stop-daemon --stop -p "$PID" --retry 60
+}
+
+function Start {
+    SetEnv
+    CreateAccess
+    ChangeUser
+    Execute
+}
+
+# Notify the application process that new config files are available
+function Reload {
+    echo "Reload:"
+    Restart
+}
+
+#Gather options from command line
+# Reset in case getopts has been used previously in the shell.
+OPTIND=1
+
+function show_help() {
+  echo "Usage: $0 <command>"
+  echo "       where command is one of:"
+  echo "       start:"
+  echo "       stop:"
+  echo "       "
+}
+
+case "$1" in
+  start)
+      echo -n "Starting $DESC: "
+      Start
+      echo "$NAME."
+      ;;
+  stop)
+      echo -n "Stopping $DESC: "
+      Stop
+      echo "$NAME."
+      ;;
+  restart)
+      echo -n "Restarting $DESC: "
+      Restart
+      echo "$NAME."
+      ;;
+  reload)
+      echo -n "Reloading $DESC: "
+      Reload
+      echo "$NAME."
+      ;;
+  *)
+      N=$NAME
+      echo "Usage: $N {start|stop|restart|reload}" >&2
+      exit 1
+      ;;
+esac
+
+exit 0

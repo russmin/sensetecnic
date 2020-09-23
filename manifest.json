@@ -1,0 +1,6 @@
+{
+  "AppName": "Sensetecnic" ,
+  "AppVersion": "1.0" ,
+  "AppDescription": "Send packets to Sensetecnic remote MQTT",
+  "AppVersionNotes": "First Version"
+}
