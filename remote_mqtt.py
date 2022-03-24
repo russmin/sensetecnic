@@ -57,8 +57,8 @@ class mqttStoreForward:
 	#call back function initiated on on_message
 	def onMessage(self, mqtt_client, userdata, msg):
 	
-		self.remote_client.publish(self.remote_topic, payload=msg, qos=0)
-		print(msg)
+		self.remote_client.publish(self.remote_topic, payload=msg.payload, qos=0)
+		print(msg.payload)
 		
 	
 		
