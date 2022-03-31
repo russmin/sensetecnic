@@ -81,7 +81,7 @@ class mqttStoreForward:
 
 		print(self.packet)
 		self.remote_client.publish(self.remote_topic, payload=self.packet, qos=0)
-		
+		self.remote_client.publish(self.remote_topic, )
 		DECODE = Decoder()
 		print(self.payloadData)
 		print(DECODE.Generic_Decoder(self.bytes))
